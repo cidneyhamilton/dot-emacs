@@ -67,6 +67,7 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
   (whitespace-line-column nil)
   (whitespace-style '(face lines-tail)))
 
+
 ;; Display options
 (use-package solarized-theme
   :init
@@ -113,6 +114,7 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
 (when (eq system-type 'gnu/linux)
   (setenv "FrameworkPathOverride" "/lib/mono/4.5"))
 
+
 ;; Org mode setup
 (require 'org)
 (global-set-key (kbd "C-c l") #'org-store-link)
@@ -125,19 +127,13 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
 
 ;; LSP
 (use-package lsp-mode
-  :straight t
-  :functions
-  lsp-format-buffer
-  :commands
-  lsp-enable-which-key-integration
+  :ensure t
+  :bind-keymap
+  ("C-c l" . lsp-command-map)
   :custom
-  (lsp-keymap-prefix "C-c s")
-  (lsp-diagnostics-provider :flymake)
-  (lsp-headerline-breadcrumb-enable nil)
-  (lsp-rust-analyzer-diagnostics-disabled
-   ["macro-error" "mismatched-arg-count"])
-  :config
-  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
+  (lsp-keymap-prefix "C-c l"))
+
+(require 'dap-unity)
 
 ;; CSHARP
 (use-package csharp-mode
@@ -146,9 +142,7 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
   :init
   (my/hook "csharp-mode" csharp-mode-hook
     (my/set-fill-column 100)
-				(gsetq-local c-basic-offset 4)
-    (gsetq-local lsp-auto-guess-root t)
-    (lsp)))
+    (gsetq-local c-basic-offset 4)))
 
 ;; Unity
 (use-package unity
@@ -168,14 +162,14 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-			'("0fffa9669425ff140ff2ae8568c7719705ef33b7a927a0ba7c5e2ffcfac09b75" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" default))
+   '("0fffa9669425ff140ff2ae8568c7719705ef33b7a927a0ba7c5e2ffcfac09b75" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" default))
  '(elfeed-feeds
-			'("https://deadsuperhero.com/rss/" "https://anchor.fm/s/52f2db0c/podcast/rss" "https://nolanlawson.com/feed" "https://nolanlawson.com/" "https://www.brainonfire.net/blog/" "http://cidney.org/feed.xml" "https://www.brainonfire.net/blog/posts.atom" "https://babbagefiles.xyz/posts/index.xml" "https://whatthefuckjusthappenedtoday.com/rss.xml" "https://heathermeeker.com/rss" "https://samkriss.com/rss" "https://blogghoran.se/feed" "https://itsfoss.com/feed/" "passionandsoul.com/blog/feed" "https://theundercoverintrovert.com/feed" "cygnusentertainment.com/blog/feed" "https://amandapalmer.net/posts/feed" "https://www.neilgaiman.com/feed/journal/" "https://blindjournalist.wordpress.com/rss" "https://jekyllrb.com/feed.xml" "https://www.inklestudios.com/blog/" "https://laurakalbag.com/posts/index.xml" "https://ar.al/index.xml" "https://www.youtube.com/feeds/videos.xml?channel_id=UCnPM1kSZf91ZGkcgy95Q" "https://kensgame.com/blog/feed" "https://emshort.blog/feed" "https://ben304.blogspot.com/feeds/posts/default?alt=rss" "https://blog.unity.com/technology/speed-up-your-programmer-workflows" "https://blog.unity.com/feed" "https://www.gibberlings3.net/rss/1-infinity-engine-modding-news.xml/" "https://www.baldurbjarnason.com/feed.xml" "https://drewdevault.com/blog/index.xml" "http://jeffmachwrites.com/rss" "https://godotengine.org/rss.xml" "https://blog.unity.com/rss-feeds" "https://victoriacorva.xyz/feed" "http://decafbad.net/feed/index.xml" "https://alexschroeder.ch/wiki/feed/full" "https://pluralistic.net/rss" "https://craphound.com/feed" "http://pedestrianobservations.com/feed" "https://sachachua.com/blog/feed" "https://abagond.wordpress.com/feed"))
+   '("https://erzadel.net/feed.xml" "https://rusingh.com/feed/" "https://christine.website/blog.rss" "https://deadsuperhero.com/rss/" "https://anchor.fm/s/52f2db0c/podcast/rss" "https://nolanlawson.com/feed" "https://nolanlawson.com/" "https://www.brainonfire.net/blog/" "http://cidney.org/feed.xml" "https://www.brainonfire.net/blog/posts.atom" "https://babbagefiles.xyz/posts/index.xml" "https://whatthefuckjusthappenedtoday.com/rss.xml" "https://heathermeeker.com/rss" "https://samkriss.com/rss" "https://blogghoran.se/feed" "https://itsfoss.com/feed/" "passionandsoul.com/blog/feed" "https://theundercoverintrovert.com/feed" "cygnusentertainment.com/blog/feed" "https://amandapalmer.net/posts/feed" "https://www.neilgaiman.com/feed/journal/" "https://blindjournalist.wordpress.com/rss" "https://jekyllrb.com/feed.xml" "https://www.inklestudios.com/blog/" "https://laurakalbag.com/posts/index.xml" "https://ar.al/index.xml" "https://www.youtube.com/feeds/videos.xml?channel_id=UCnPM1kSZf91ZGkcgy95Q" "https://kensgame.com/blog/feed" "https://emshort.blog/feed" "https://ben304.blogspot.com/feeds/posts/default?alt=rss" "https://blog.unity.com/technology/speed-up-your-programmer-workflows" "https://blog.unity.com/feed" "https://www.gibberlings3.net/rss/1-infinity-engine-modding-news.xml/" "https://www.baldurbjarnason.com/feed.xml" "https://drewdevault.com/blog/index.xml" "http://jeffmachwrites.com/rss" "https://godotengine.org/rss.xml" "https://blog.unity.com/rss-feeds" "https://victoriacorva.xyz/feed" "http://decafbad.net/feed/index.xml" "https://alexschroeder.ch/wiki/feed/full" "https://pluralistic.net/rss" "https://craphound.com/feed" "http://pedestrianobservations.com/feed" "https://sachachua.com/blog/feed" "https://abagond.wordpress.com/feed"))
  '(org-agenda-files '("~/org/gtd.org"))
  '(org-log-into-drawer t)
  '(package-enable-at-startup nil)
  '(package-selected-packages
-			'(jabber helm bitlbee org-jira mpv which-key omnisharp emms emacsql emacsql-sqlite lsp-mode magit markdown-mode elfeed csharp-mode solarized-theme elpher darkroom ink-mode)))
+   '(jabber helm bitlbee org-jira mpv which-key omnisharp emms emacsql emacsql-sqlite lsp-mode magit markdown-mode elfeed csharp-mode solarized-theme elpher darkroom ink-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
