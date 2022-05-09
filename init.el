@@ -142,6 +142,7 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
   :init
   (my/hook "csharp-mode" csharp-mode-hook
     (my/set-fill-column 100)
+    (c-toggle-auto-newline)
     (gsetq-local c-basic-offset 4)))
 
 ;; Unity
