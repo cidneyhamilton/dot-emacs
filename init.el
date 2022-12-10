@@ -1,30 +1,11 @@
-(customize-set-variable 'package-enable-at-startup nil)
-
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-(straight-use-package 'general)
-(eval-and-compile
-  (require 'general)
-  (defalias 'gsetq #'general-setq)
-  (defalias 'gsetq-default #'general-setq-default)
-  (defalias 'gsetq-local #'general-setq-local))
-
-(straight-use-package 'use-package)
+(require 'package)
+;; Add MELPA to `list-packages'.
+(add-to-list 'package-archives
+	     '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
 ;; No need for backups
 (setq backup-directory-alist '(("." . "~/.config/emacs/backups")))
-(setq make-backuop-files nil)
+(setq make-backup-files nil)
 
 ;; EWW setings
 (setq browse-url-browser-function 'eww-browse-url)
@@ -35,50 +16,10 @@
   (unless (server-running-p)
     (server-start)))
 
-;; Helm
-(use-package helm
-  :straight t)
-
-;; (global-set-key (kbd "M-x") 'helm-M-x)
-;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
-;; (global-set-key (kbd "C-x b") 'helm-buffers-list)
-
 (add-to-list 'auto-mode-alist '("\\.html.erb" . html-erb-mode))
-
-(defmacro my/hook (package-name hook &rest body)
-  "Add a new function hook with the given BODY to the given HOOK.
-
-PACKAGE-NAME is a unique prefix given to each function hook name."
-  (let ((fun-name (intern (concat "my/hook--"
-                                  (symbol-name hook)
-                                  "--"
-                                  package-name))))
-    `(progn
-       (eval-and-compile (defun ,fun-name () ,@body))
-       (add-hook ',hook #',fun-name))))
-(setf (get 'my/hook 'lisp-indent-function) 2)
-
-(defun my/align-whitespace (start end)
-  "Align columns by whitespace from START to END."
-  (interactive "r")
-  (align-regexp start end
-                "\\(\\s-*\\)\\s-" 1 0 t))
-
-(defun my/set-fill-column (value)
-  "Set the fill column of the buffer and update `whitespace-mode' to match."
-  (whitespace-mode -1)
-  (gsetq-local fill-column value)
-  (whitespace-mode 1))
 
 ;; tab-width
 (setq-default tab-width 1)
-
-(use-package whitespace
-  :diminish whitespace-mode global-whitespace-mode
-  :custom
-  (whitespace-line-column nil)
-  (whitespace-style '(face lines-tail)))
-
 
 ;; Display options
 (use-package solarized-theme
@@ -109,51 +50,11 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
       erc-autojoin-channels-alist '(("irc.libera.chat" "#emacsconf" "#indieweb" "#emacs"))
       )
 
-(use-package package
-  :config
-  ;; Add MELPA to `list-packages'.
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
-
 (use-package flymake
   :hook
   (find-file . flymake-mode))
 
-;; Important for Unity development
-(gsetq-default buffer-file-coding-system 'utf-8-unix
-               fill-column 80
-               indent-tabs-mode nil
-               require-final-newline t
-               sentence-end-double-space nil
-               tab-width 8)
-
 (add-to-list 'completion-ignored-extensions ".meta")
-
-;; Unity and CSHARP configuration
-(when (eq system-type 'gnu/linux)
-  (setenv "FrameworkPathOverride" "/lib/mono/4.5"))
-
-;; Godot
-(use-package gdscript-mode
-    :straight (gdscript-mode
-               :type git
-               :host github
-               :repo "godotengine/emacs-gdscript-mode"))
-
-(setq gdscript-godot-executable "~/Dev/Godot/Godot_v3.5.1-stable_x11.64")
-
-;; LSP mode fix
-(defun lsp--gdscript-ignore-errors (original-function &rest args)
-  "Ignore the error message resulting from Godot not replying to the `JSONRPC' request."
-  (if (string-equal major-mode "gdscript-mode")
-      (let ((json-data (nth 0 args)))
-        (if (and (string= (gethash "jsonrpc" json-data "") "2.0")
-                 (not (gethash "id" json-data nil))
-                 (not (gethash "method" json-data nil)))
-            nil ; (message "Method not found")
-          (apply original-function args)))
-    (apply original-function args)))
-;; Runs the function `lsp--gdscript-ignore-errors` around `lsp--get-message-type` to suppress unknown notification errors.
-(advice-add #'lsp--get-message-type :around #'lsp--gdscript-ignore-errors)
 
 ;; Org mode setup
 (require 'org)
@@ -165,7 +66,6 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
         ("i" "Inbox" entry (file+headline "~/org/inbox.org" "Inbox") "* %?\n%T")))
 
 (setq org-todo-keywords '("TODO" "NEXT" "WAITING" "DONE"))
-(setq org-agenda-include-diary t)                                               
 (setq org-agenda-include-all-todo t)
 (setq org-default-notes-file "~/org/inbox.org")
 (setq org-src-preserve-indentation nil)
@@ -175,12 +75,12 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
  '((python . t)))
 
 ;; LSP
-(use-package lsp-mode
-  :ensure t
-  :bind-keymap
-  ("C-c l" . lsp-command-map)
-  :custom
-  (lsp-keymap-prefix "C-c l"))
+;; (use-package lsp-mode
+;;   :ensure t
+;;   :bind-keymap
+;;   ("C-c l" . lsp-command-map)
+;;   :custom
+;;   (lsp-keymap-prefix "C-c l"))
 
 ;; (require 'dap-unity)
 
@@ -188,15 +88,6 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
 (setq mastodon-instance-url "https://social.city-of-glass.net"
       mastodon-active-user "cidney")
 
-;; CSHARP
-(use-package csharp-mode
-  :straight t
-  :defer t
-  :init
-  (my/hook "csharp-mode" csharp-mode-hook
-    (my/set-fill-column 100)
-    (c-toggle-auto-newline)
-    (gsetq-local c-basic-offset 4)))
 
 ;; Elfeed
 (setq elfeed-feeds
@@ -242,15 +133,6 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
         ("https://abagond.wordpress.com/feed" people)
         )
       )
-
-;; Unity
-(use-package unity
-  :straight (unity :type git :host github :protocol ssh
-                   :repo "elizagamedev/unity.el"
-                   :files ("*.el" "*.c"))
-  :config
-  (unity-build-code-shim)
-  (unity-setup))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
