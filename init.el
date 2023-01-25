@@ -164,7 +164,8 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
       '(("d" "Distraction" entry (file+headline "~/org/distractions.org" "Distractions") "* %?\n%T")
         ("i" "Inbox" entry (file+headline "~/org/inbox.org" "Inbox") "* %?\n%T")))
 
-(setq org-todo-keywords '("TODO" "NEXT" "WAITING" "DONE"))
+(setq org-todo-keywords
+      '((sequence "TODO" "|" "WAITING" "DONE")))
 (setq org-agenda-include-diary t)                                               
 (setq org-agenda-include-all-todo t)
 (setq org-default-notes-file "~/org/inbox.org")
@@ -172,7 +173,8 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
 
 (org-babel-do-load-languages
  'org-babel-load-languages
- '((python . t)))
+ '((python . t)
+   (C . t)))
 
 ;; LSP
 (use-package lsp-mode
@@ -260,7 +262,7 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
  '(custom-safe-themes
    '("fee7287586b17efbfda432f05539b58e86e059e78006ce9237b8732fde991b4c" "4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3" "0fffa9669425ff140ff2ae8568c7719705ef33b7a927a0ba7c5e2ffcfac09b75" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" default))
  '(ispell-dictionary nil)
- '(org-agenda-files nil)
+ '(org-agenda-files '("~/org/projects.org"))
  '(org-log-into-drawer t)
  '(package-enable-at-startup nil)
  '(package-selected-packages
