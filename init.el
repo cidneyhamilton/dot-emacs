@@ -29,6 +29,9 @@
 ;; EWW setings
 (setq browse-url-browser-function 'eww-browse-url)
 
+;; Apropos settings
+(setq apropos-sort-by-scores t)
+
 ;; Start server
 (use-package server
   :config
@@ -83,7 +86,7 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
 ;; Display options
 (use-package solarized-theme
   :init
-  (load-theme 'solarized-zenburn t)
+  (load-theme 'solarized-selenized-dark t)
   (tool-bar-mode -1)
   (toggle-scroll-bar -1))
 
@@ -102,12 +105,12 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
 (global-set-key "\C-cT" 'google-translate-query-translate)
 
 ;; Load IRC configuration
-(setq rcirc-default-nick "cidney")
-(setq erc-server "irc.libera.chat"
-      erc-nick "cidney"
-      erc-user-full-name "Cidney Hamilton"
-      erc-autojoin-channels-alist '(("irc.libera.chat" "#emacsconf" "#indieweb" "#emacs"))
-      )
+;; (setq rcirc-default-nick "cidney")
+;; (setq erc-server "irc.libera.chat"
+;;       erc-nick "cidney"
+;;       erc-user-full-name "Cidney Hamilton"
+;;       erc-autojoin-channels-alist '(("irc.libera.chat" "#emacsconf" "#indieweb" "#emacs"))
+;;       )
 
 (use-package package
   :config
@@ -133,27 +136,27 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
   (setenv "FrameworkPathOverride" "/lib/mono/4.5"))
 
 ;; Godot
-(use-package gdscript-mode
-    :straight (gdscript-mode
-               :type git
-               :host github
-               :repo "godotengine/emacs-gdscript-mode"))
+;; (use-package gdscript-mode
+;;     :straight (gdscript-mode
+;;                :type git
+;;                :host github
+;;                :repo "godotengine/emacs-gdscript-mode"))
 
-(setq gdscript-godot-executable "~/Dev/Godot/Godot_v3.5.1-stable_x11.64")
+;; (setq gdscript-godot-executable "~/Dev/Godot/Godot_v3.5.1-stable_x11.64")
 
 ;; LSP mode fix
-(defun lsp--gdscript-ignore-errors (original-function &rest args)
-  "Ignore the error message resulting from Godot not replying to the `JSONRPC' request."
-  (if (string-equal major-mode "gdscript-mode")
-      (let ((json-data (nth 0 args)))
-        (if (and (string= (gethash "jsonrpc" json-data "") "2.0")
-                 (not (gethash "id" json-data nil))
-                 (not (gethash "method" json-data nil)))
-            nil ; (message "Method not found")
-          (apply original-function args)))
-    (apply original-function args)))
-;; Runs the function `lsp--gdscript-ignore-errors` around `lsp--get-message-type` to suppress unknown notification errors.
-(advice-add #'lsp--get-message-type :around #'lsp--gdscript-ignore-errors)
+;; (defun lsp--gdscript-ignore-errors (original-function &rest args)
+;;   "Ignore the error message resulting from Godot not replying to the `JSONRPC' request."
+;;   (if (string-equal major-mode "gdscript-mode")
+;;       (let ((json-data (nth 0 args)))
+;;         (if (and (string= (gethash "jsonrpc" json-data "") "2.0")
+;;                  (not (gethash "id" json-data nil))
+;;                  (not (gethash "method" json-data nil)))
+;;             nil ; (message "Method not found")
+;;           (apply original-function args)))
+;;     (apply original-function args)))
+;; ;; Runs the function `lsp--gdscript-ignore-errors` around `lsp--get-message-type` to suppress unknown notification errors.
+;; (advice-add #'lsp--get-message-type :around #'lsp--gdscript-ignore-errors)
 
 ;; Org mode setup
 (require 'org)
@@ -165,7 +168,7 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
         ("i" "Inbox" entry (file+headline "~/org/inbox.org" "Inbox") "* %?\n%T")))
 
 (setq org-todo-keywords
-      '((sequence "TODO" "|" "WAITING" "DONE")))
+      '((sequence "TODO" "NEXT" "|" "WAITING" "DONE")))
 (setq org-agenda-include-diary t)                                               
 (setq org-agenda-include-all-todo t)
 (setq org-default-notes-file "~/org/inbox.org")
@@ -177,12 +180,13 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
    (C . t)))
 
 ;; LSP
-(use-package lsp-mode
-  :ensure t
-  :bind-keymap
-  ("C-c l" . lsp-command-map)
-  :custom
-  (lsp-keymap-prefix "C-c l"))
+;; (use-package lsp-mode
+;;   :ensure t
+;;   :bind-keymap
+;;   ("C-c l" . lsp-command-map)
+;;   :custom
+;;   (lsp-keymap-prefix "C-c l"))
+
 
 ;; (require 'dap-unity)
 
@@ -203,10 +207,6 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
 ;; Elfeed
 (setq elfeed-feeds
       '(
-        ("https://www.reddit.com/r/writing.rss" writing reddit)        
-        ("https://www.reddit.com/r/emacs.rss" emacs reddit)
-        ("https://www.reddit.com/r/German.rss" german reddit)
-        ("https://www.reddit.com/r/gamedev.rss" gamedev reddit)
         ("https://erzadel.net/feed.xml" people)
         ("https://rusingh.com/feed/" people webdev)
         ("https://christine.website/blog.rss" webdev)
@@ -233,7 +233,6 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
         ("https://www.baldurbjarnason.com/feed.xml" webdev)
         ("https://drewdevault.com/blog/index.xml" webdev)
         ("http://jeffmachwrites.com/rss" writing people)
-        ("https://godotengine.org/rss.xml" gamdev)
         ("https://victoriacorva.xyz/feed" writing)
         ("http://decafbad.net/feed/index.xml" people)
         ("https://alexschroeder.ch/wiki/feed/full" people emacs)
@@ -246,13 +245,14 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
       )
 
 ;; Unity
-(use-package unity
-  :straight (unity :type git :host github :protocol ssh
-                   :repo "elizagamedev/unity.el"
-                   :files ("*.el" "*.c"))
-  :config
-  (unity-build-code-shim)
-  (unity-setup))
+;; (use-package unity
+;;  :straight (unity :type git :host github :protocol ssh
+;;                   :repo "elizagamedev/unity.el"
+;;                   :files ("*.el" "*.c"))
+;;  :config
+;;  (unity-build-code-shim)
+;;  (unity-setup))
+;;
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -260,13 +260,14 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("fee7287586b17efbfda432f05539b58e86e059e78006ce9237b8732fde991b4c" "4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3" "0fffa9669425ff140ff2ae8568c7719705ef33b7a927a0ba7c5e2ffcfac09b75" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" default))
+   '("285d1bf306091644fb49993341e0ad8bafe57130d9981b680c1dbd974475c5c7" "00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "57a29645c35ae5ce1660d5987d3da5869b048477a7801ce7ab57bfb25ce12d3e" "fee7287586b17efbfda432f05539b58e86e059e78006ce9237b8732fde991b4c" "4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3" "0fffa9669425ff140ff2ae8568c7719705ef33b7a927a0ba7c5e2ffcfac09b75" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" default))
  '(ispell-dictionary nil)
  '(org-agenda-files '("~/org/projects.org"))
  '(org-log-into-drawer t)
  '(package-enable-at-startup nil)
  '(package-selected-packages
-   '(jabber helm bitlbee org-jira mpv which-key omnisharp emms emacsql emacsql-sqlite lsp-mode magit markdown-mode elfeed csharp-mode solarized-theme elpher darkroom ink-mode)))
+   '(jabber helm bitlbee org-jira mpv which-key omnisharp emms emacsql emacsql-sqlite lsp-mode magit markdown-mode elfeed csharp-mode solarized-theme elpher darkroom ink-mode))
+ '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
