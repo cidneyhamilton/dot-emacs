@@ -10,6 +10,17 @@
 ;; EWW setings
 (setq browse-url-browser-function 'eww-browse-url)
 
+;; Ink mode
+;; Path to the Inklecate binary, used to playtest
+;; and to check for errors
+(setq ink-inklecate-path "/home/cidney/Dev/tools/inklecate")
+
+;; Enable flymake (error reporting)
+(add-hook 'ink-mode-hook 'flymake-mode)
+
+;; Set indentation level
+(add-hook 'ink-mode-hook (lambda () (setq tab-width 2)))
+
 ;; Start server
 (use-package server
   :config
@@ -24,7 +35,7 @@
 ;; Display options
 (use-package solarized-theme
   :init
-  (load-theme 'solarized-zenburn t)
+  (load-theme 'solarized-light t)
   (tool-bar-mode -1)
   (toggle-scroll-bar -1))
 
@@ -63,8 +74,8 @@
 (global-set-key (kbd "C-c c") #'org-capture)
 (setq org-src-tabs-act-natively t)
 (setq org-capture-templates
-      '(("d" "Distraction" entry (file+headline "~/org/distractions.org" "Distractions") "* %?\n%T")
-        ("i" "Inbox" entry (file+headline "~/org/inbox.org" "Inbox") "* %?\n%T")))
+      '(("i" "Inbox" entry (file+headline "~/org/projects.org" "Inbox") "* %?\n%T")))
+(add-hook 'org-mode-hook 'turn-on-flyspell)
 
 (setq org-todo-keywords '("TODO" "NEXT" "WAITING" "MAYBE" "DONE"))
 (setq org-agenda-include-all-todo t)
@@ -119,7 +130,6 @@
         ("https://baldurbjarnason.com/feed.xml" webdev)
         ("https://drewdevault.com/blog/index.xml" webdev)
         ("https://jeffmachwrites.com/rss" writing people)
-        ("https://godotengine.org/rss.xml" gamdev)
         ("https://victoriacorva.xyz/feed" writing)
         ("https://decafbad.net/feed/index.xml" people)
         ("https://alexschroeder.ch/wiki/feed/full" people emacs)
