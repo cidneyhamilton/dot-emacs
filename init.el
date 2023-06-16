@@ -1,30 +1,12 @@
-(customize-set-variable 'package-enable-at-startup nil)
-
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-(straight-use-package 'general)
-(eval-and-compile
-  (require 'general)
-  (defalias 'gsetq #'general-setq)
-  (defalias 'gsetq-default #'general-setq-default)
-  (defalias 'gsetq-local #'general-setq-local))
-
-(straight-use-package 'use-package)
+(require 'package)
+;; Add MELPA to `list-packages'.
+(add-to-list 'package-archives
+	     '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(package-initialize)
 
 ;; No need for backups
 (setq backup-directory-alist '(("." . "~/.config/emacs/backups")))
-(setq make-backuop-files nil)
+(setq make-backup-files nil)
 
 ;; EWW setings
 (setq browse-url-browser-function 'eww-browse-url)
@@ -32,56 +14,44 @@
 ;; Apropos settings
 (setq apropos-sort-by-scores t)
 
+;; GDscript
+(defun lsp--gdscript-ignore-errors (original-function &rest args)
+  "Ignore the error message resulting from Godot not replying to the `JSONRPC' request."
+  (if (string-equal major-mode "gdscript-mode")
+      (let ((json-data (nth 0 args)))
+        (if (and (string= (gethash "jsonrpc" json-data "") "2.0")
+                 (not (gethash "id" json-data nil))
+                 (not (gethash "method" json-data nil)))
+            nil ; (message "Method not found")
+          (apply original-function args)))
+    (apply original-function args)))
+;; Runs the function `lsp--gdscript-ignore-errors` around `lsp--get-message-type` to suppress unknown notification errors.
+(advice-add #'lsp--get-message-type :around #'lsp--gdscript-ignore-errors)
+
+;; Add Unity.el to load path
+(add-to-list 'load-path "~/Dev/unity.el/")
+
+;; Ink mode
+;; Path to the Inklecate binary, used to playtest
+;; and to check for errors
+(setq ink-inklecate-path "/home/cidney/Dev/tools/inklecate")
+
+;; Enable flymake (error reporting)
+(add-hook 'ink-mode-hook 'flymake-mode)
+
+;; Set indentation level
+(add-hook 'ink-mode-hook (lambda () (setq tab-width 2)))
+
 ;; Start server
 (use-package server
   :config
   (unless (server-running-p)
     (server-start)))
 
-;; Helm
-(use-package helm
-  :straight t)
-
-;; (global-set-key (kbd "M-x") 'helm-M-x)
-;; (global-set-key (kbd "C-x C-f") 'helm-find-files)
-;; (global-set-key (kbd "C-x b") 'helm-buffers-list)
-
 (add-to-list 'auto-mode-alist '("\\.html.erb" . html-erb-mode))
 
-(defmacro my/hook (package-name hook &rest body)
-  "Add a new function hook with the given BODY to the given HOOK.
-
-PACKAGE-NAME is a unique prefix given to each function hook name."
-  (let ((fun-name (intern (concat "my/hook--"
-                                  (symbol-name hook)
-                                  "--"
-                                  package-name))))
-    `(progn
-       (eval-and-compile (defun ,fun-name () ,@body))
-       (add-hook ',hook #',fun-name))))
-(setf (get 'my/hook 'lisp-indent-function) 2)
-
-(defun my/align-whitespace (start end)
-  "Align columns by whitespace from START to END."
-  (interactive "r")
-  (align-regexp start end
-                "\\(\\s-*\\)\\s-" 1 0 t))
-
-(defun my/set-fill-column (value)
-  "Set the fill column of the buffer and update `whitespace-mode' to match."
-  (whitespace-mode -1)
-  (gsetq-local fill-column value)
-  (whitespace-mode 1))
-
 ;; tab-width
-(setq-default tab-width 1)
-
-(use-package whitespace
-  :diminish whitespace-mode global-whitespace-mode
-  :custom
-  (whitespace-line-column nil)
-  (whitespace-style '(face lines-tail)))
-
+(setq-default tab-width 2)
 
 ;; Display options
 (use-package solarized-theme
@@ -112,22 +82,9 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
 ;;       erc-autojoin-channels-alist '(("irc.libera.chat" "#emacsconf" "#indieweb" "#emacs"))
 ;;       )
 
-(use-package package
-  :config
-  ;; Add MELPA to `list-packages'.
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
-
 (use-package flymake
   :hook
   (find-file . flymake-mode))
-
-;; Important for Unity development
-(gsetq-default buffer-file-coding-system 'utf-8-unix
-               fill-column 80
-               indent-tabs-mode nil
-               require-final-newline t
-               sentence-end-double-space nil
-               tab-width 8)
 
 (add-to-list 'completion-ignored-extensions ".meta")
 
@@ -163,9 +120,10 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
 (global-set-key (kbd "C-c l") #'org-store-link)
 (global-set-key (kbd "C-c a") #'org-agenda)
 (global-set-key (kbd "C-c c") #'org-capture)
+(setq org-src-tabs-act-natively t)
 (setq org-capture-templates
-      '(("d" "Distraction" entry (file+headline "~/org/distractions.org" "Distractions") "* %?\n%T")
-        ("i" "Inbox" entry (file+headline "~/org/inbox.org" "Inbox") "* %?\n%T")))
+      '(("i" "Inbox" entry (file+headline "~/org/projects.org" "Inbox") "* %?\n%T")))
+(add-hook 'org-mode-hook 'turn-on-flyspell)
 
 (setq org-todo-keywords
       '((sequence "TODO" "NEXT" "|" "WAITING" "DONE")))
@@ -177,7 +135,8 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((python . t)
-   (C . t)))
+   (C . t)
+   (ruby . t)))
 
 ;; LSP
 ;; (use-package lsp-mode
@@ -187,58 +146,48 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
 ;;   :custom
 ;;   (lsp-keymap-prefix "C-c l"))
 
-
 ;; (require 'dap-unity)
 
 ;; Mastodon
 (setq mastodon-instance-url "https://social.city-of-glass.net"
       mastodon-active-user "cidney")
 
-;; CSHARP
-(use-package csharp-mode
-  :straight t
-  :defer t
-  :init
-  (my/hook "csharp-mode" csharp-mode-hook
-    (my/set-fill-column 100)
-    (c-toggle-auto-newline)
-    (gsetq-local c-basic-offset 4)))
 
 ;; Elfeed
 (setq elfeed-feeds
       '(
-        ("https://erzadel.net/feed.xml" people)
-        ("https://rusingh.com/feed/" people webdev)
+
+        ("https://erzadel.net/feed.xml" people fediverse)
+        ("https://rusingh.com/feed/" people webdev fediverse)
         ("https://christine.website/blog.rss" webdev)
-        ("https://deadsuperhero.com/rss/" people)
-        ("https://nolanlawson.com/feed" webdev)
-        ("https://www.brainonfire.net/blog/" people webdev)
-        ("http://cidney.org/feed.xml" people)
-        ("https://www.brainonfire.net/blog/posts.atom" people webdev)
+        ("https://deadsuperhero.com/rss/" people gamedev)
+        ("https://nolanlawson.com/feed" people webdev)
+        ("https://cidney.org/feed.xml" people)
+        ("https://brainonfire.net/blog/posts.atom" people webdev)
         ("https://babbagefiles.xyz/posts/index.xml" people webdev)
-        ("https://blogghoran.se/feed" people)
+        ("https://blogghoran.se/feed" people fediverse)
         ("https://passionandsoul.com/blog/feed" people)
-        ("https://theundercoverintrovert.com/feed" writing)
+        ("https://theundercoverintrovert.com/feed" writing people)
         ("https://cygnusentertainment.com/blog/feed" gamedev)
         ("https://amandapalmer.net/posts/feed" people)
-        ("https://www.neilgaiman.com/feed/journal/" people writing)
+        ("https://neilgaiman.com/feed/journal/" people writing)
         ("https://blindjournalist.wordpress.com/rss" people writing)
         ("https://jekyllrb.com/feed.xml" webdev)
-        ("https://www.inklestudios.com/blog/" gamedev)
+        ("https://inklestudios.com/blog/" gamedev)
         ("https://laurakalbag.com/posts/index.xml" webdev)
         ("https://ar.al/index.xml" webddev)
         ("https://emshort.blog/feed" gamedev)
         ("https://ben304.blogspot.com/feeds/posts/default?alt=rss" gamedev)
-        ("https://www.gibberlings3.net/rss/1-infinity-engine-modding-news.xml" gamedev)
-        ("https://www.baldurbjarnason.com/feed.xml" webdev)
+        ("https://gibberlings3.net/rss/1-infinity-engine-modding-news.xml" gamedev)
+        ("https://baldurbjarnason.com/feed.xml" webdev)
         ("https://drewdevault.com/blog/index.xml" webdev)
-        ("http://jeffmachwrites.com/rss" writing people)
+        ("https://jeffmachwrites.com/rss" writing people)
         ("https://victoriacorva.xyz/feed" writing)
-        ("http://decafbad.net/feed/index.xml" people)
+        ("https://decafbad.net/feed/index.xml" people)
         ("https://alexschroeder.ch/wiki/feed/full" people emacs)
         ("https://pluralistic.net/rss" news)
         ("https://craphound.com/feed" news)
-        ("http://pedestrianobservations.com/feed" people)
+        ("https://pedestrianobservations.com/feed" people)
         ("https://sachachua.com/blog/feed" emacs)
         ("https://abagond.wordpress.com/feed" people)
         )
@@ -260,14 +209,48 @@ PACKAGE-NAME is a unique prefix given to each function hook name."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("285d1bf306091644fb49993341e0ad8bafe57130d9981b680c1dbd974475c5c7" "00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "57a29645c35ae5ce1660d5987d3da5869b048477a7801ce7ab57bfb25ce12d3e" "fee7287586b17efbfda432f05539b58e86e059e78006ce9237b8732fde991b4c" "4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3" "0fffa9669425ff140ff2ae8568c7719705ef33b7a927a0ba7c5e2ffcfac09b75" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" default))
+	 '("fee7287586b17efbfda432f05539b58e86e059e78006ce9237b8732fde991b4c" "4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3" "0fffa9669425ff140ff2ae8568c7719705ef33b7a927a0ba7c5e2ffcfac09b75" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" default))
+ '(elfeed-feeds
+	 '("http://ljwrites.blog/index.xml" "https://deadsuperhero.com/comments/feed/" "https://rosenzweig.io/feed.xml" "https://zenhabits.net/feed/"
+		 ("https://erzadel.net/feed.xml" people fediverse)
+		 ("https://rusingh.com/feed/" people webdev fediverse)
+		 ("https://christine.website/blog.rss" webdev)
+		 ("https://deadsuperhero.com/rss/" people gamedev)
+		 ("https://nolanlawson.com/feed" people webdev)
+		 ("https://cidney.org/feed.xml" people)
+		 ("https://brainonfire.net/blog/posts.atom" people webdev)
+		 ("https://babbagefiles.xyz/posts/index.xml" people webdev)
+		 ("https://blogghoran.se/feed" people fediverse)
+		 ("https://passionandsoul.com/blog/feed" people)
+		 ("https://theundercoverintrovert.com/feed" writing people)
+		 ("https://cygnusentertainment.com/blog/feed" gamedev)
+		 ("https://amandapalmer.net/posts/feed" people)
+		 ("https://neilgaiman.com/feed/journal/" people writing)
+		 ("https://blindjournalist.wordpress.com/rss" people writing)
+		 ("https://jekyllrb.com/feed.xml" webdev)
+		 ("https://inklestudios.com/blog/" gamedev)
+		 ("https://laurakalbag.com/posts/index.xml" webdev)
+		 ("https://ar.al/index.xml" webddev)
+		 ("https://emshort.blog/feed" gamedev)
+		 ("https://ben304.blogspot.com/feeds/posts/default?alt=rss" gamedev)
+		 ("https://gibberlings3.net/rss/1-infinity-engine-modding-news.xml" gamedev)
+		 ("https://baldurbjarnason.com/feed.xml" webdev)
+		 ("https://drewdevault.com/blog/index.xml" webdev)
+		 ("https://jeffmachwrites.com/rss" writing people)
+		 ("https://victoriacorva.xyz/feed" writing)
+		 ("https://decafbad.net/feed/index.xml" people)
+		 ("https://alexschroeder.ch/wiki/feed/full" people emacs)
+		 ("https://pluralistic.net/rss" news)
+		 ("https://craphound.com/feed" news)
+		 ("https://pedestrianobservations.com/feed" people)
+		 ("https://sachachua.com/blog/feed" emacs)
+		 ("https://abagond.wordpress.com/feed" people)))
  '(ispell-dictionary nil)
- '(org-agenda-files '("~/org/projects.org"))
+ '(org-agenda-files '("~/org/projects.org" "~/org/artists-way.org"))
  '(org-log-into-drawer t)
  '(package-enable-at-startup nil)
  '(package-selected-packages
-   '(jabber helm bitlbee org-jira mpv which-key omnisharp emms emacsql emacsql-sqlite lsp-mode magit markdown-mode elfeed csharp-mode solarized-theme elpher darkroom ink-mode))
- '(tool-bar-mode nil))
+	 '(csharp-mode gdscript-mode emms markdown-mode elfeed solarized-theme elpher darkroom ink-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
