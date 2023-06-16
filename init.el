@@ -211,7 +211,9 @@
  '(custom-safe-themes
 	 '("fee7287586b17efbfda432f05539b58e86e059e78006ce9237b8732fde991b4c" "4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3" "0fffa9669425ff140ff2ae8568c7719705ef33b7a927a0ba7c5e2ffcfac09b75" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" default))
  '(elfeed-feeds
-	 '("http://ljwrites.blog/index.xml" "https://deadsuperhero.com/comments/feed/" "https://rosenzweig.io/feed.xml" "https://zenhabits.net/feed/"
+	 '("http://ljwrites.blog/index.xml"     
+     "https://rosenzweig.io/feed.xml"
+     "https://zenhabits.net/feed/"
 		 ("https://erzadel.net/feed.xml" people fediverse)
 		 ("https://rusingh.com/feed/" people webdev fediverse)
 		 ("https://christine.website/blog.rss" webdev)
