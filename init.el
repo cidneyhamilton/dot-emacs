@@ -67,7 +67,7 @@
 
 ;; TODO list
 (setq org-todo-keywords
-      '((sequence "TODO" "NEXT" "|" "WAITING" "DONE")))
+      '((sequence "TODO" "|" "IN-PROGRESS" "WAITING" "DONE")))
 (setq org-agenda-include-diary t)
 (setq org-agenda-include-all-todo t)
 (setq org-default-notes-file "~/org/inbox.org")
@@ -137,7 +137,7 @@
  '(custom-safe-themes
 	 '("cca1d386d4a3f645c2f8c49266e3eb9ee14cf69939141e3deb9dfd50ccaada79" "7887cf8b470098657395502e16809523b629249060d61607c2225d2ef2ad59f5" "e5a748cbefd483b74b183d7da4fca6228207a6bf9be9792dc85403a186724e1f" "032426ec19e515fd3a54b38016a1c5e4ec066be3230198cb3df82d05630a02ed" "c06aa0ddb649e4e45f36dd95de98263672864074373937e65a23c8338f52c6af" "2141b59c9b098b476a7e20f7a621985b5d89544ae22a8d4b79b574f1203b6496" "49887e6f0c666dfc10fad4c23c7a83a176cb296968648c02b85deec25bb11103" "bcfeecf5f2ee0bbc64450f7c5155145d8d2c590b1310a898c505f48b4b5f4c75" "02790c735d32ad3b28c630329fdfc503ea62077d088b0c52302ab61e5a3b037e" "41bbaed6a17405ee6929c7e1f8035cffd05d0ebf3f08ce388da0e92c63fb6cef" "c6b317b294f9e0ecf7290a6d76b4c96ffd52213cdcb3fdad5db29141c63866cf" "20d3ce5f5cb95716edca608ef7bbc27d9f8d66c9a51200f7be3f08c107810f3e" "fee7287586b17efbfda432f05539b58e86e059e78006ce9237b8732fde991b4c" "4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3" "0fffa9669425ff140ff2ae8568c7719705ef33b7a927a0ba7c5e2ffcfac09b75" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" default))
  '(elfeed-feeds
-	 '("https://jessmahler.com/feed/" "https://buttondown.email/jackyalcine/rss"
+	 '("https://fediversereport.com/feed/" "http://feeds.feedblitz.com/daedtech/www" "https://jessmahler.com/feed/" "https://buttondown.email/jackyalcine/rss"
 		 ("https://abagond.wordpress.com/feed" people)
 		 ("https://alexschroeder.ch/wiki/feed/full" people emacs)
 		 ("https://amandapalmer.net/posts/feed" people)
@@ -181,7 +181,7 @@
 		 ("https://victoriacorva.xyz/feed" writing)
 		 ("https://wedistribute.org/feed" webdev)
 		 ("https://xkcd.com/atom.xml")
-		 ("https://zenhabits.net/feed/" personal)))
+		 ("https://zenhabits.net/feed/" personal)) t)
  '(fci-rule-color "#184956")
  '(highlight-changes-colors '("#f275be" "#af88eb"))
  '(highlight-symbol-colors
@@ -209,7 +209,7 @@
  '(org-log-into-drawer t)
  '(package-enable-at-startup nil)
  '(package-selected-packages
-	 '(modus-themes dictionary mastodon elfeed-tube yasnippet eglot ef-themes magit csharp-mode gdscript-mode emms markdown-mode elfeed solarized-theme elpher darkroom ink-mode))
+	 '(helm modus-themes dictionary mastodon elfeed-tube yasnippet eglot ef-themes magit csharp-mode gdscript-mode emms markdown-mode elfeed solarized-theme elpher darkroom ink-mode))
  '(pos-tip-background-color "#184956")
  '(pos-tip-foreground-color "#cad8d9")
  '(smartrep-mode-line-active-bg (solarized-color-blend "#75b938" "#184956" 0.2))
