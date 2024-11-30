@@ -1,13 +1,8 @@
-
 (require 'package)
-;; Add MELPA to `list-packages'.
-(add-to-list 'package-archives
-	     '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(package-initialize)
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+(add-to-list 'package-archives'("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(package-initialize)
+(unless (package-installed-p 'use-package) (package-refresh-contents) (package-install 'use-package))
 
 (use-package graphviz-dot-mode
   :ensure t
@@ -17,29 +12,15 @@
 (add-to-list 'load-path "~/.emacs.d/unity.el/")
 (add-to-list 'load-path "~/.emacs.d/nov.el/")
 
-;; Easy binding for switching between windows
 (global-set-key (kbd "M-o") 'other-window)
 
-;; IDO mode everywhere
 (ido-mode 1)
 (setq ido-everywhere t)
 (setq ido-enable-flex-matching t)
 
-;; If package-check-signature is allow-unsigned, don't
-;; signal error when we can't verify signature because of
-;; missing public key.  Other errors are still treated as
-;; fatal (bug#17625).
 (setq package-check-signature nil)
 
 (setenv "FrameworkPathOverride" "/lib/mono/4.5")
-  
-;; Unity configuration
-;; (use-package lsp-mode
-;;   :ensure t
-;;   :bind-keymap
-;;   ("C-c l" . lsp-command-map)
-;;   :custom
-;;   (lsp-keymap-prefix "C-c l"))
 
 (use-package csharp-mode
   :ensure t
@@ -49,7 +30,6 @@
     (lsp))
   (add-hook 'csharp-mode-hook #'my/csharp-mode-hook))
 
-;; Start server
 (use-package server
   :config
   (unless (server-running-p)
@@ -59,13 +39,13 @@
 (setq-default tab-width 2)
 
 ;; Display options
-(use-package solarized
+(use-package ef-themes
   :init
-  (load-theme 'ef-reverie t)
+  (load-theme 'ef-night t)
   (tool-bar-mode -1)
   (toggle-scroll-bar -1))
 
-;; (setq ef-themes-to-toggle '(ef-summer ef-night))
+(setq ef-themes-to-toggle '(ef-summer ef-night))
 
 ;; Magit keybindings
 (use-package magit
@@ -83,7 +63,7 @@
 (setq gdscript-godot-executable "/usr/bin/godot")
 
 ;; Create jekyll post
-(setq blog-home "~/src/web/cidney.org")
+(setq blog-home "~/src/websites/cidney.org")
 
 (defun web-draft
   (title)
@@ -146,9 +126,9 @@
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
  '(custom-safe-themes
-	 '("d0dc7861b33d68caa92287d39cf8e8d9bc3764ec9c76bdb8072e87d90546c8a3" "b93039071f490613499b76c237c2624ae67a9aafbc717da9b4d81f456344e56e" "9fba87dbc0f14d5650006893ed53088be71f16d57b749394d9c485ef2326e85f" "01cad03be8c042a9941fda5a484280629ee2cc83fe084af6d19376c83141c91b" "a087e01778a85f8381b2aa2b7b0832951aea078621b38844b6c8c8d638d73e3b" "97283a649cf1ffd7be84dde08b45a41faa2a77c34a4832d3884c7f7bba53f3f5" "4f03e70554a58349740973c69e73aefd8ce761a77b22a9dc52a19e708532084a" "fb7595c9571f2bd41635745d12551f35322296b70330056ddd0020ab2374671c" "587ce9a1a961792114991fd488ef9c3fc37f165f6fea8b89d155640e81d165a3" "5e41864cbdd81b18d1fa62f09971a55a121a939238ca4c66faafcfcafb976c3e" "fee7287586b17efbfda432f05539b58e86e059e78006ce9237b8732fde991b4c" "e5a748cbefd483b74b183d7da4fca6228207a6bf9be9792dc85403a186724e1f" "aee4c6b492ad130f13868464e4d7f2b2846de9b7f0d2933499c907f47dc010f4" "41bbaed6a17405ee6929c7e1f8035cffd05d0ebf3f08ce388da0e92c63fb6cef" default))
+	 '("8093e0f40c724d32955ae65b7122ff74ce6aa9a86e408712e8dbfb0e325a3ad7" "f019002925408f081e767c515e4fb4b1d7f1462228d6cd32ff66f06a43671527" "0a953c81f5798aa99cafbc4aa8a56d16827442400028f6c1eab0c43061ea331c" "d0dc7861b33d68caa92287d39cf8e8d9bc3764ec9c76bdb8072e87d90546c8a3" "b93039071f490613499b76c237c2624ae67a9aafbc717da9b4d81f456344e56e" "9fba87dbc0f14d5650006893ed53088be71f16d57b749394d9c485ef2326e85f" "01cad03be8c042a9941fda5a484280629ee2cc83fe084af6d19376c83141c91b" "a087e01778a85f8381b2aa2b7b0832951aea078621b38844b6c8c8d638d73e3b" "97283a649cf1ffd7be84dde08b45a41faa2a77c34a4832d3884c7f7bba53f3f5" "4f03e70554a58349740973c69e73aefd8ce761a77b22a9dc52a19e708532084a" "fb7595c9571f2bd41635745d12551f35322296b70330056ddd0020ab2374671c" "587ce9a1a961792114991fd488ef9c3fc37f165f6fea8b89d155640e81d165a3" "5e41864cbdd81b18d1fa62f09971a55a121a939238ca4c66faafcfcafb976c3e" "fee7287586b17efbfda432f05539b58e86e059e78006ce9237b8732fde991b4c" "e5a748cbefd483b74b183d7da4fca6228207a6bf9be9792dc85403a186724e1f" "aee4c6b492ad130f13868464e4d7f2b2846de9b7f0d2933499c907f47dc010f4" "41bbaed6a17405ee6929c7e1f8035cffd05d0ebf3f08ce388da0e92c63fb6cef" default))
  '(elfeed-feeds
-	 '("https://bildung.social/@computerspielemuseum.rss" "mastodon.gamedev.place/@IFComp.rss" "https://blindjournalist.wordpress.com/rss" "https://io.mwl.io/@mwl.rss" "https://writeout.ink/@ljwrites.rss" "https://dosgame.club/@summerb" "https://wandering.shop/@afeinman.rss" "https://mastodon.gamedev.place/@JuliaMinamata.rss" "https://ruby.social/@natbudin.rss" "https://tabletop.social/@kensanata.rss" "https://mastodon.social/@ThreeOhFour.rss" "http://social.wedistribute.org/@deadsuperhero.rss" "https://mastodon.gamedev.place/@wadjeteyegames.rss" "http://mamot.fr/@pluralistic.rss" "https://social.coop/@dynamic.rss" "https://toot.cafe/@baldur.rss" "https://lief3d.dev/" "https://lief3d.dev/feed" "http://www.nathalielawhead.com/candybox/feed"
+	 '("https://ljwrites.blog/index.xml" "https://kechpaja.com/blog/feed/feed.xml" "https://kechpaja.com/blog/" "https://terikanefield.com/feed" "https://bildung.social/@computerspielemuseum.rss" "mastodon.gamedev.place/@IFComp.rss" "https://blindjournalist.wordpress.com/rss" "https://io.mwl.io/@mwl.rss" "https://dosgame.club/@summerb" "https://ruby.social/@natbudin.rss" "http://social.wedistribute.org/@deadsuperhero.rss" "https://mastodon.gamedev.place/@wadjeteyegames.rss""https://social.coop/@dynamic.rss" "https://lief3d.dev/" "https://lief3d.dev/feed" "http://www.nathalielawhead.com/candybox/feed"
 		 ("https://abagond.wordpress.com/feed" social-science)
 		 ("https://alexschroeder.ch/wiki/feed/full" emacs ttrpgs)
 		 ("https://ar.al/index.xml" webddev)
