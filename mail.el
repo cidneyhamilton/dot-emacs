@@ -6,7 +6,7 @@
 (setq mu4e-get-mail-command  "mbsync -a")
 
 (setq
- mu4e-headers-skip-duplicates  t
+ mu4e-headers-skip-duplicates t
  mu4e-view-show-images t
  mu4e-view-show-addresses t
  mu4e-compose-format-flowed nil
